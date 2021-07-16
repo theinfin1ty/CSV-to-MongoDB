@@ -1,0 +1,10 @@
+<% layout('layouts/boilerplate') %>
+<div class="col-6 offset-3">
+    <form action="/client" enctype="multipart/form-data" class="validated-form" method="POST">
+        <div class="mb-3">
+            <label class="form-label" for="file">Select CSV File:</label>
+            <input type="file" name="file" id="file">
+        </div>
+        <button class="btn btn-primary">Submit</button>
+    </form>
+</div>
