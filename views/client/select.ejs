@@ -6,7 +6,8 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">File</th>
-                <th scope="col">Action</th>
+                <th scope="col">View</th>
+                <th scope="col">Delete</th>
             </tr>
         </thead>
         <tbody>
@@ -15,6 +16,7 @@
                 <td><%= count++ %></td>
                 <td><%= csv.fileName %></td>
                 <td><a class="btn btn-primary" href="/client/select/<%=csv._id%>/">View</a></td>
+                <td><form action="/client/select/<%=csv._id%>?_method=DELETE" method="POST"><button class="btn btn-danger">Delete</button></form></td>
             </tr>
             <% } %> 
         </tbody>
