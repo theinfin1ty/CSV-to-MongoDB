@@ -8,6 +8,9 @@ const csvSchema = new Schema({
     fileName: {
         type: String
     },
+    headers: [{
+        type: String
+    }],
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User'

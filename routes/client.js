@@ -54,6 +54,9 @@ router.post('/', isLoggedIn, upload.single("file"), catchAsync(async(req, res) =
         csvToJSON()
         .fromFile(csv.filePath)
         .then(catchAsync(async(jsonObj)=>{
+            headers = Object.keys(jsonObj[0]);
+            csv.headers = headers;
+            await csv.save();
             jsonObj.map((obj) => {
                 obj.file = csv._id;
             })
@@ -67,6 +70,68 @@ router.post('/', isLoggedIn, upload.single("file"), catchAsync(async(req, res) =
         req.flash("error", "Could not upload the file");
         res.redirect('/client');
     }
+}))
+
+router.get('/select', isLoggedIn, catchAsync(async (req, res) => {
+    const csvs = await CSV.find({ user: req.user._id });
+    res.render('client/select', { csvs });
+}))
+
+router.get('/select/:fileId', isLoggedIn, catchAsync(async (req, res) => {
+    const { fileId } = req.params;  
+    const csv = await CSV.findById(fileId);
+    const headers = csv.headers;
+    const datas = await Data.find({ file: csv._id });
+    var contents = JSON.parse(JSON.stringify(datas));
+    res.render('client/data', { contents, headers, fileId });
+}))
+
+router.get('/select/:fileId/new', isLoggedIn, catchAsync(async (req, res) => {
+    const { fileId } = req.params;
+    const csv = await CSV.findById(fileId);
+    const headers = csv.headers;
+    res.render('client/new', { headers, fileId });
+}))
+
+router.post('/select/:fileId', isLoggedIn, catchAsync(async (req, res) => {
+    const { fileId } = req.params;
+    const values = req.body;
+    const csv = await CSV.findById(fileId);
+    const data = await new Data(values);
+    await data.save();
+    await Data.findByIdAndUpdate(data._id, {file: csv._id});
+    req.flash('success', 'Successfully added a data entry');
+    res.redirect(`/client/select/${csv._id}`);
+}))
+
+router.get('/select/:fileId/:id', isLoggedIn, catchAsync(async (req, res) => {
+    const { fileId, id } = req.params;
+    const csv = await CSV.findById(fileId);
+    const headers = csv.headers;
+    const data = await Data.findOne({ _id: id });
+    if(!data)
+    {
+        req.flash("error", "Could not find data");
+        res.redirect(`/client/select/${csv._id}`);
+    }
+    var content = JSON.parse(JSON.stringify(data));
+    res.render('client/edit', { fileId, content, headers });
+}))
+
+router.put('/select/:fileId/:id', isLoggedIn, catchAsync(async (req, res) => {
+    const { fileId, id } = req.params;
+    const values = req.body;
+    console.log(values);
+    const data = await Data.findByIdAndUpdate(id, values);
+    req.flash('success', 'Data entry updated successfully');
+    res.redirect(`/client/select/${fileId}`);
+}))
+
+router.delete('/select/:fileId/:id', isLoggedIn, catchAsync(async(req, res) => {
+    const { fileId, id } = req.params;
+    await Data.findByIdAndDelete(id);
+    req.flash('success','Data entry successfully deleted');
+    res.redirect(`/client/select/${fileId}`);
 }))
 
 module.exports = router;

@@ -1,0 +1,22 @@
+<% layout('layouts/boilerplate') %>
+<% let count = 1; %> 
+<div class="col-6 offset-3">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">File</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let csv of csvs) { %>
+            <tr>
+                <td><%= count++ %></td>
+                <td><%= csv.fileName %></td>
+                <td><a class="btn btn-primary" href="/client/select/<%=csv._id%>/">View</a></td>
+            </tr>
+            <% } %> 
+        </tbody>
+    </table>
+</div>
