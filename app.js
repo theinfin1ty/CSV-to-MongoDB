@@ -14,7 +14,9 @@ const User = require('./models/user');
 const userRoutes = require('./routes/users');
 const clientRoutes = require('./routes/client');
 
-mongoose.connect('mongodb://localhost:27017/csv-to-mongo', {
+const dbUrl = process.env.DB_URL;
+//'mongodb://localhost:27017/csv-to-mongo'
+mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
