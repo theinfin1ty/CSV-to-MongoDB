@@ -1,5 +1,5 @@
  // Example starter JavaScript for disabling form submissions if there are invalid fields
- (function () {
+(function () {
     'use strict'
 
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
@@ -17,7 +17,7 @@
             form.classList.add('was-validated')
         }, false)
         })
-    })()
+})()
 
 
 var check = function() {
@@ -29,4 +29,4 @@ var check = function() {
         document.getElementById('message').style.color = 'red';
         document.getElementById('message').innerHTML = 'Passwords not matching!';
     }
-    }
+}
