@@ -10,12 +10,13 @@ const ExpressError = require('./utils/ExpressError');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
+const MongoStore = require('connect-mongo')(session);
 
 const userRoutes = require('./routes/users');
 const clientRoutes = require('./routes/client');
 
-const dbUrl = process.env.DB_URL;
-//'mongodb://localhost:27017/csv-to-mongo'
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/csv-to-mongo';
+
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -39,7 +40,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+const store = new MongoStore({
+    url: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: process.env.SESSION_SECRET
+    }
+    
+})
+
+store.on("error", (err) => {
+    console.log("Session Store Error!", err);
+})
+
 const sessionConfig = {
+    store: store,
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
@@ -85,6 +100,8 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render('error', { err });
 })
 
-app.listen(3000, () => {
-    console.log('serving on port 3000');
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+    console.log(`Serving on port ${port}`);
 })
